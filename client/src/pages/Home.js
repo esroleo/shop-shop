@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ProductList from "../components/ProductList";
 import CategoryMenu from "../components/CategoryMenu";
+import Cart from '../components/Cart';
 
 // Before being managed globally
 // const Home = () => {
@@ -23,6 +24,7 @@ const Home = () => {
     <div className="container">
       <CategoryMenu />
       <ProductList />
+      <Cart />
     </div>
   );
 };

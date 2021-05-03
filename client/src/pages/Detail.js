@@ -7,6 +7,8 @@ import { useQuery } from '@apollo/react-hooks';
 import { QUERY_PRODUCTS } from "../utils/queries";
 import spinner from '../assets/spinner.gif'
 
+import Cart from '../components/Cart';
+
 function Detail() {
   // Before using the GlobalState Store
   // const { id } = useParams();
@@ -78,6 +80,8 @@ function Detail() {
       {
         loading ? <img src={spinner} alt="loading" /> : null
       }
+      {/*Add Cart */}
+      <Cart />
     </>
   );
 };
