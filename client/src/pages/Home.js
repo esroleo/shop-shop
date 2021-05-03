@@ -2,13 +2,27 @@ import React, { useState } from "react";
 import ProductList from "../components/ProductList";
 import CategoryMenu from "../components/CategoryMenu";
 
-const Home = () => {
-  const [currentCategory, setCategory] = useState("");
+// Before being managed globally
+// const Home = () => {
+//   const [currentCategory, setCategory] = useState("");
 
+//   before being managed globally
+//   return (
+//     <div className="container">
+//       <CategoryMenu setCategory={setCategory} />
+//       <ProductList currentCategory={currentCategory} />
+//     </div>
+//   );
+
+ 
+// };
+
+ // after being managed globally
+const Home = () => {
   return (
     <div className="container">
-      <CategoryMenu setCategory={setCategory} />
-      <ProductList currentCategory={currentCategory} />
+      <CategoryMenu />
+      <ProductList />
     </div>
   );
 };
