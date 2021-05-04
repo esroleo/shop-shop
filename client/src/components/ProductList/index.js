@@ -47,6 +47,14 @@ function ProductList({}) {
       data.products.forEach((product) => {
         idbPromise('products', 'put', product);
       });
+    } else if (!loading) {
+      idbPromise('products', 'get').then((products) => {
+        // use retrieved data to set global state for offline browsing
+        dispatch({
+          type: UPDATE_PRODUCTS,
+          products: products
+        });
+      })
     }
   }, [data, dispatch]);
 

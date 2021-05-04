@@ -6,6 +6,10 @@ import { QUERY_CATEGORIES } from "../../utils/queries";
 // Provider Global Store import
 import { useStoreContext } from "../../utils/GlobalState";
 
+// Import IndexDB helper which will allow the app to talk
+// to the database
+import { idbPromise } from '../../utils/helpers';
+
 // setCategory  was used before adding our handleclick
 //function CategoryMenu({ setCategory }) {
 // therefore it can be removed from the prop as we are using the 
@@ -20,7 +24,8 @@ function CategoryMenu({}) {
 
   const { categories } = state;
 
-  const { data: categoryData } = useQuery(QUERY_CATEGORIES);
+  // loading will be used for offline capabilities
+  const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
   useEffect(() => {
     // if categoryData exists or has changed from the response of useQuery, then run dispatch()
@@ -29,6 +34,10 @@ function CategoryMenu({}) {
       dispatch({
         type: UPDATE_CATEGORIES,
         categories: categoryData.categories
+      });
+      // also add to indexDB
+      categoryData.categories.forEach(category => {
+        idbPromise('categories', 'put', category);
       });
     }
   }, [categoryData, dispatch]);
