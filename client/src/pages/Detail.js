@@ -14,6 +14,10 @@ import spinner from '../assets/spinner.gif'
 
 import Cart from '../components/Cart';
 
+// Import IndexDB helper which will allow the app to talk
+// to the database
+import { idbPromise } from "../utils/helpers";
+
 function Detail() {
   // Before using the GlobalState Store
   // const { id } = useParams();
@@ -42,6 +46,7 @@ function Detail() {
   const { products, cart } = state;
 
   useEffect(() => {
+    // already in global store
     if (products.length) {
       setCurrentProduct(products.find(product => product._id === id));
     } else if (data) {
@@ -49,8 +54,23 @@ function Detail() {
         type: UPDATE_PRODUCTS,
         products: data.products
       });
+
+      // add to indexDB also
+      data.products.forEach((product) => {
+        idbPromise('products', 'put', product);
+      });
     }
-  }, [products, data, dispatch, id]);
+    // get cache from idb
+    else if(!loading) {
+      idbPromise('products', 'get').then((indexedProducts) => {
+        dispatch({
+          type: UPDATE_PRODUCTS,
+          products: indexedProducts
+        });
+      });
+
+    }
+  }, [loading, products, data, dispatch, id]);
 
   // const addToCart = () => {
   //   dispatch({

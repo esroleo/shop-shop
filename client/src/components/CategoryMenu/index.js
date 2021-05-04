@@ -39,8 +39,17 @@ function CategoryMenu({}) {
       categoryData.categories.forEach(category => {
         idbPromise('categories', 'put', category);
       });
+    } else if (!loading) {
+      console.log("I am offline")
+      idbPromise('categories', 'get').then(categories => {
+        dispatch({
+          type: UPDATE_CATEGORIES,
+          categories: categories
+        });
+      });
+
     }
-  }, [categoryData, dispatch]);
+  }, [loading, categoryData, dispatch]);
 
   const handleClick = id => {
     dispatch({

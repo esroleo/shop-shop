@@ -50,13 +50,14 @@ function ProductList({}) {
     } else if (!loading) {
       idbPromise('products', 'get').then((products) => {
         // use retrieved data to set global state for offline browsing
+        console.log("I am offline")
         dispatch({
           type: UPDATE_PRODUCTS,
           products: products
         });
       })
     }
-  }, [data, dispatch]);
+  }, [loading, data, dispatch]);
 
   function filterProducts() {
     if (!currentCategory) {
