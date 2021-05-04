@@ -7,6 +7,10 @@ import ProductItem from "../ProductItem";
 import { QUERY_PRODUCTS } from "../../utils/queries";
 import spinner from "../../assets/spinner.gif"
 
+//import IndexDB helper which will allow the app to talk
+// to the database
+import { idbPromise } from "../../utils/helpers";
+
 // currentCategory props is no longer used as is part of the 
 //function ProductList({ currentCategory }) {
 // global state
@@ -37,6 +41,11 @@ function ProductList({}) {
       dispatch({
         type: UPDATE_PRODUCTS,
         products: data.products
+      });
+
+      // but let's also take each product and save it to IndexedDB using the helper function 
+      data.products.forEach((product) => {
+        idbPromise('products', 'put', product);
       });
     }
   }, [data, dispatch]);
