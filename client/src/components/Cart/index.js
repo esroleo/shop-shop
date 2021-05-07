@@ -4,9 +4,17 @@ import { idbPromise } from "../../utils/helpers";
 import CartItem from '../CartItem';
 import Auth from '../../utils/auth';
 import './style.css';
-
 import { useStoreContext } from '../../utils/GlobalState';
 //import { TOGGLE_CART } from '../../utils/actions';
+
+// stripe checkout api
+// to be used as part of the button checkout process
+import { loadStripe } from "@stripe/stripe-js";
+import { useLazyQuery } from '@apollo/react-hooks';
+import { QUERY_CHECKOUT } from "../../utils/queries"
+
+// API key in context of REACT as testing key.
+const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 const Cart = () => {
 
@@ -18,6 +26,10 @@ const Cart = () => {
   */
 
   const [state, dispatch] = useStoreContext();
+  // using lazyQuery to be used as part of the checkout function
+  const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT);
+
+
 
   useEffect(() => {
     async function getCart() {
@@ -29,6 +41,15 @@ const Cart = () => {
       getCart();
     }
   }, [state.cart.length, dispatch]);
+
+  // use effect for checkout lazyhook
+  useEffect(() => {
+    if (data) {
+      stripePromise.then((res) => {
+        res.redirectToCheckout({ sessionId: data.checkout.session });
+      });
+    }
+  }, [data]);
   
 
   function toggleCart() {
@@ -56,6 +77,22 @@ const Cart = () => {
     */
    // at this poit state.cartOpen is !state.cartOpen
 
+   // call our QUERY_CHECKOUT query
+       // handle stripe checkout
+       function submitCheckout() {
+        const productIds = [];
+    
+        state.cart.forEach((item) => {
+          for (let i = 0; i < item.purchaseQuantity; i++) {
+            productIds.push(item._id);
+          }
+        });
+    
+        getCheckout({
+          variables: { products: productIds }
+        });
+      }
+
     if (!state.cartOpen) {
       return (
         <div className="cart-closed" onClick={toggleCart}>
@@ -65,6 +102,8 @@ const Cart = () => {
         </div>
       );
     }
+    
+
 
   return (
 
@@ -80,9 +119,9 @@ const Cart = () => {
             <strong>Total: ${calculateTotal()}</strong>
             {
               Auth.loggedIn() ?
-                <button>
-                  Checkout
-                </button>
+              <button onClick={submitCheckout}>
+              Checkout
+             </button>
                 :
                 <span>(log in to check out)</span>
             }
